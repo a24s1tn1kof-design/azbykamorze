@@ -5,105 +5,330 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Азбука Морзе</title>
 <style>
-  * { box-sizing: border-box; }
+  :root {
+    --bg: #0a0e17;
+    --panel: #111827;
+    --panel-2: #0d1420;
+    --border: #1f2937;
+    --border-hi: #2d3b52;
+    --text: #e5e7eb;
+    --muted: #6b7280;
+    --accent: #38bdf8;
+    --accent-hi: #7dd3fc;
+    --accent-dim: rgba(56,189,248,0.12);
+    --danger: #f87171;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
   body {
-    font-family: -apple-system, system-ui, sans-serif;
-    background: #0f172a; color: #e2e8f0;
-    max-width: 760px; margin: 0 auto; padding: 24px;
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(56,189,248,0.08), transparent 45%),
+      radial-gradient(circle at 85% 100%, rgba(125,211,252,0.05), transparent 45%);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    -webkit-font-smoothing: antialiased;
   }
-  h1 { text-align: center; font-size: 24px; margin-bottom: 4px; }
-  .sub { text-align: center; color: #64748b; font-size: 13px; margin-bottom: 24px; }
+
+  .wrap { width: 100%; max-width: 720px; }
+
+  /* ===== Header ===== */
+  header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 32px;
+  }
+  .logo {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #0ea5e9, #0369a1);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(56,189,248,0.25);
+  }
+  .logo svg { width: 24px; height: 24px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; }
+  h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+  .subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* ===== Lang switch ===== */
+  .lang {
+    margin-left: auto;
+    display: flex;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .lang button {
+    background: transparent; border: none; color: var(--muted);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+    padding: 6px 14px; border-radius: 7px; cursor: pointer;
+    transition: all .15s; font-family: inherit;
+  }
+  .lang button.active { background: var(--accent); color: #0a0e17; }
+  .lang button:not(.active):hover { color: var(--text); }
+
+  /* ===== Card ===== */
   .card {
-    background: #1e293b; border-radius: 12px; padding: 16px;
-    margin-bottom: 16px; border: 1px solid #334155;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: border-color .2s;
   }
-  label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 8px;
-    text-transform: uppercase; letter-spacing: 0.5px; }
+  .card:focus-within { border-color: var(--border-hi); }
+
+  .card-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .card-label svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
   textarea {
-    width: 100%; min-height: 90px; resize: vertical;
-    background: #0f172a; color: #e2e8f0; border: 1px solid #334155;
-    border-radius: 8px; padding: 12px; font-family: ui-monospace, monospace;
-    font-size: 15px; line-height: 1.5;
+    width: 100%;
+    min-height: 96px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    padding: 14px;
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    letter-spacing: 0.3px;
+    resize: vertical;
+    transition: border-color .15s, box-shadow .15s;
   }
-  textarea:focus { outline: none; border-color: #38bdf8; }
-  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-  button {
-    background: #334155; color: #e2e8f0; border: none;
-    padding: 8px 16px; border-radius: 8px; cursor: pointer;
-    font-size: 14px; transition: background .15s;
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
   }
-  button:hover { background: #475569; }
-  button.primary { background: #38bdf8; color: #0f172a; font-weight: 600; }
-  button.primary:hover { background: #7dd3fc; }
-  button:disabled { opacity: 0.4; cursor: not-allowed; }
-  input[type=range] { width: 160px; vertical-align: middle; }
-  .speed-row { display: flex; align-items: center; gap: 12px;
-    font-size: 13px; color: #94a3b8; margin-top: 10px; }
-  .speed-val { color: #38bdf8; font-family: ui-monospace, monospace; min-width: 70px; }
-  .hint { font-size: 12px; color: #64748b; margin-top: 8px; line-height: 1.6; }
+  textarea::placeholder { color: #4b5563; }
+
+  /* ===== Buttons ===== */
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+  button.btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 9px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px; font-weight: 500;
+    font-family: inherit;
+    transition: all .15s;
+  }
+  button.btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  button.btn:hover { background: #1a2332; border-color: var(--border-hi); }
+  button.btn:active { transform: translateY(1px); }
+  button.btn.primary {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    border-color: transparent;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(14,165,233,0.3);
+  }
+  button.btn.primary:hover { background: linear-gradient(135deg, #38bdf8, #0ea5e9); }
+  button.btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+  button.btn.copied { border-color: #10b981; color: #10b981; }
+
+  /* ===== Speed slider ===== */
+  .speed {
+    display: flex; align-items: center; gap: 14px;
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 13px; color: var(--muted);
+  }
+  .speed label { display: flex; align-items: center; gap: 6px; }
+  .speed svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+  input[type=range] {
+    -webkit-appearance: none; appearance: none;
+    flex: 1; height: 4px; border-radius: 2px;
+    background: var(--border);
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(56,189,248,0.2);
+    transition: transform .15s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  input[type=range]::-moz-range-thumb {
+    width: 16px; height: 16px; border: none; border-radius: 50%;
+    background: var(--accent); cursor: pointer;
+  }
+  .wpm-val {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    color: var(--accent); font-weight: 600;
+    min-width: 62px; text-align: right;
+  }
+
+  /* ===== Hint ===== */
+  .hint {
+    font-size: 12px; color: var(--muted);
+    line-height: 1.8; padding: 16px 20px;
+  }
+  .hint code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    padding: 2px 6px; border-radius: 5px;
+    color: var(--accent-hi); font-size: 11px;
+  }
+  .hint b { color: var(--text); font-weight: 600; }
+
+  /* ===== Footer ===== */
+  footer {
+    margin-top: 24px; text-align: center;
+    font-size: 12px; color: #374151;
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* ===== Playing indicator ===== */
+  .playing-dot {
+    display: inline-block; width: 8px; height: 8px;
+    background: var(--accent); border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 1s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<h1>📡 Азбука Морзе</h1>
-<p class="sub">Перевод текста ↔ код Морзе · звук · настройка скорости</p>
+  <header>
+    <div class="logo">
+      <!-- Радио-волны -->
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="2" fill="#fff" stroke="none"/>
+        <path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7"/>
+        <path d="M5.5 5.5a9 9 0 0 0 0 13M18.5 5.5a9 9 0 0 1 0 13"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Азбука Морзе</h1>
+      <div class="subtitle">Перевод · звук · настройка скорости</div>
+    </div>
+    <div class="lang">
+      <button id="langRU" class="active" onclick="setLang('ru')">RU</button>
+      <button id="langEN" onclick="setLang('en')">EN</button>
+    </div>
+  </header>
 
-<div class="card">
-  <label>Текст</label>
-  <textarea id="text" placeholder="Введите текст..." autofocus>Привет мир</textarea>
-</div>
-
-<div class="card">
-  <label>Код Морзе</label>
-  <textarea id="morse" placeholder=".... . .-.. .-.. ---"></textarea>
-  <div class="row">
-    <button class="primary" onclick="playMorse()">▶ Воспроизвести</button>
-    <button onclick="stopAudio()">⏹ Стоп</button>
-    <button onclick="copyMorse()">📋 Копировать</button>
-    <button onclick="swap()">🔄 Поменять</button>
+  <!-- Text input -->
+  <div class="card">
+    <div class="card-label">
+      <svg viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+      <span id="labelText">Текст</span>
+    </div>
+    <textarea id="text" placeholder="Введите текст..." autofocus>Привет мир</textarea>
   </div>
-  <div class="speed-row">
-    <span>Скорость:</span>
-    <input type="range" id="wpm" min="5" max="30" value="15">
-    <span class="speed-val" id="wpmVal">15 WPM</span>
-  </div>
-</div>
 
-<div class="card">
-  <p class="hint">
-    <b>Формат ввода:</b> буквы разделяются пробелом, слова — «/».<br>
-    Пример: <code>.... . .-.. .-.. --- / .-- --- .-. .-.. -..</code> → «hello world»<br>
-    <b>Поддержка:</b> латиница, кириллица, цифры, знаки <code>. , ? ! / ( ) & : ; = + - _ " $ @</code>
-  </p>
+  <!-- Morse output -->
+  <div class="card">
+    <div class="card-label">
+      <svg viewBox="0 0 24 24"><path d="M4 12h2M4 8h6M4 16h4M14 12h6M14 8h6M14 16h6"/></svg>
+      <span>Код Морзе</span>
+    </div>
+    <textarea id="morse" placeholder=".... . .-.. .-.. ---"></textarea>
+    <div class="row">
+      <button class="btn primary" id="playBtn" onclick="playMorse()">
+        <svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8V4z" fill="currentColor" stroke="none"/></svg>
+        <span>Воспроизвести</span>
+      </button>
+      <button class="btn danger" onclick="stopAudio()">
+        <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1" fill="currentColor" stroke="none"/></svg>
+        <span>Стоп</span>
+      </button>
+      <button class="btn" id="copyBtn" onclick="copyMorse(event)">
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        <span>Копировать</span>
+      </button>
+      <button class="btn" onclick="swap()">
+        <svg viewBox="0 0 24 24"><path d="M7 4v13M7 17l-3-3M7 17l3-3M17 20V7M17 7l-3 3M17 7l3 3"/></svg>
+        <span>Поменять</span>
+      </button>
+    </div>
+
+    <div class="speed">
+      <label>
+        <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+        Скорость
+      </label>
+      <input type="range" id="wpm" min="5" max="30" value="15">
+      <span class="wpm-val" id="wpmVal">15 WPM</span>
+    </div>
+  </div>
+
+  <!-- Hint -->
+  <div class="card hint">
+    <b>Формат:</b> буквы — через пробел, слова — через <code>/</code><br>
+    <b>Пример:</b> <code>.... . .-.. .-.. --- / .-- --- .-. .-.. -..</code> → «hello world»<br>
+    <b>Поддержка:</b> кириллица, латиница, цифры, <code>. , ? ! / ( ) & : ; = + - _ " $ @</code>
+  </div>
+
+  <footer>
+    <a href="https://github.com/a24s1tn1kof-design/azbykamorze" target="_blank">github / azbykamorze</a>
+  </footer>
+
 </div>
 
 <script>
-// ============ Таблица Морзе ============
-const MORSE = {
+// ============ Таблицы ============
+const MORSE_LAT = {
   'A':'.-','B':'-...','C':'-.-.','D':'-..','E':'.','F':'..-.','G':'--.','H':'....',
   'I':'..','J':'.---','K':'-.-','L':'.-..','M':'--','N':'-.','O':'---','P':'.--.',
   'Q':'--.-','R':'.-.','S':'...','T':'-','U':'..-','V':'...-','W':'.--','X':'-..-',
   'Y':'-.--','Z':'--..',
-  'А':'.-','Б':'-...','В':'.--','Г':'--.','Д':'-..','Е':'.','Ж':'...-','З':'--..',
-  'И':'..','Й':'.---','К':'-.-','Л':'.-..','М':'--','Н':'-.','О':'---','П':'.--.',
-  'Р':'.-.','С':'...','Т':'-','У':'..-','Ф':'..-.','Х':'....','Ц':'-.-.','Ч':'---.',
-  'Ш':'----','Щ':'--.-','Ъ':'--.--','Ы':'-.--','Ь':'-..-','Э':'..-..','Ю':'..--',
-  'Я':'.-.-',
   '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....',
   '6':'-....','7':'--...','8':'---..','9':'----.',
   '.':'.-.-.-',',':'--..--','?':'..--..','!':'-.-.--','/':'-..-.','(':'-.--.',
   ')':'-.--.-','&':'.-...',':':'---...',';':'-.-.-.','=':'-...-','+':'.-.-.',
   '-':'-....-','_':'..--.-','"':'.-..-.','$':'...-..-','@':'.--.-.'
 };
-// обратный словарь
-const REV = {};
-for (const k in MORSE) REV[MORSE[k]] = k;
+
+const MORSE_CYR = {
+  'А':'.-','Б':'-...','В':'.--','Г':'--.','Д':'-..','Е':'.','Ж':'...-','З':'--..',
+  'И':'..','Й':'.---','К':'-.-','Л':'.-..','М':'--','Н':'-.','О':'---','П':'.--.',
+  'Р':'.-.','С':'...','Т':'-','У':'..-','Ф':'..-.','Х':'....','Ц':'-.-.','Ч':'---.',
+  'Ш':'----','Щ':'--.-','Ъ':'--.--','Ы':'-.--','Ь':'-..-','Э':'..-..','Ю':'..--',
+  'Я':'.-.-'
+};
+
+let currentLang = 'ru';
+let MORSE = {}, REV = {};
+
+function rebuildTables() {
+  MORSE = Object.assign({}, MORSE_LAT, currentLang === 'ru' ? MORSE_CYR : {});
+  REV = {};
+  for (const k in MORSE) REV[MORSE[k]] = k;
+}
+rebuildTables();
 
 // ============ Перевод ============
 function textToMorse(txt) {
   return txt.toUpperCase().split('').map(ch => {
-    if (ch === ' ') return '/';
-    if (ch === '\n') return '/';
+    if (ch === ' ' || ch === '\n' || ch === '\t') return '/';
     return MORSE[ch] || '';
   }).filter(x => x !== '').join(' ');
 }
@@ -115,10 +340,10 @@ function morseToText(m) {
   }).join('');
 }
 
-// ============ Связка полей ============
+// ============ Поля ============
 const textEl = document.getElementById('text');
 const morseEl = document.getElementById('morse');
-let editing = null; // какое поле сейчас правит пользователь
+let editing = null;
 
 textEl.addEventListener('input', () => {
   if (editing === 'morse') return;
@@ -137,22 +362,33 @@ function swap() {
   const t = textEl.value;
   textEl.value = morseEl.value;
   morseEl.value = t;
-  // пересчитать
+  // пересчёт под текущий язык
   morseEl.value = textToMorse(textEl.value);
 }
 
-function copyMorse() {
+function copyMorse(e) {
   navigator.clipboard.writeText(morseEl.value).then(() => {
-    const btn = event.target;
-    const old = btn.textContent;
-    btn.textContent = '✓ Скопировано';
-    setTimeout(() => btn.textContent = old, 1200);
+    const btn = document.getElementById('copyBtn');
+    const span = btn.querySelector('span');
+    const old = span.textContent;
+    btn.classList.add('copied');
+    span.textContent = 'Скопировано';
+    setTimeout(() => { btn.classList.remove('copied'); span.textContent = old; }, 1400);
   });
 }
 
-// ============ Аудио (Web Audio API) ============
+// ============ Смена языка ============
+function setLang(lang) {
+  currentLang = lang;
+  document.getElementById('langRU').classList.toggle('active', lang === 'ru');
+  document.getElementById('langEN').classList.toggle('active', lang === 'en');
+  rebuildTables();
+  // пересчитать морзе из текста
+  morseEl.value = textToMorse(textEl.value);
+}
+
+// ============ Аудио ============
 let audioCtx = null;
-let stopFlag = false;
 
 function getCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -160,12 +396,10 @@ function getCtx() {
 }
 
 function stopAudio() {
-  stopFlag = true;
-  if (audioCtx) audioCtx.close();
-  audioCtx = null;
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  document.getElementById('playBtn').querySelector('span').textContent = 'Воспроизвести';
 }
 
-// длительность точки в секундах из WPM (формула PARIS)
 function dotTime(wpm) { return 1.2 / wpm; }
 
 function beep(ctx, startTime, duration, freq = 700) {
@@ -176,8 +410,8 @@ function beep(ctx, startTime, duration, freq = 700) {
   osc.connect(gain);
   gain.connect(ctx.destination);
   gain.gain.setValueAtTime(0, startTime);
-  gain.gain.linearRampToValueAtTime(0.25, startTime + 0.005);
-  gain.gain.setValueAtTime(0.25, startTime + duration - 0.005);
+  gain.gain.linearRampToValueAtTime(0.22, startTime + 0.005);
+  gain.gain.setValueAtTime(0.22, startTime + duration - 0.005);
   gain.gain.linearRampToValueAtTime(0, startTime + duration);
   osc.start(startTime);
   osc.stop(startTime + duration);
@@ -185,64 +419,55 @@ function beep(ctx, startTime, duration, freq = 700) {
 
 async function playMorse() {
   stopAudio();
-  await new Promise(r => setTimeout(r, 30)); // дать контексту закрыться
+  await new Promise(r => setTimeout(r, 40));
   const ctx = getCtx();
   const wpm = +document.getElementById('wpm').value;
   const dot = dotTime(wpm);
   const dash = dot * 3;
-  const gapSym = dot;        // между точками/тире внутри символа
-  const gapChar = dot * 3;   // между символами
-  const gapWord = dot * 7;   // между словами
+  const gapSym = dot;
+  const gapChar = dot * 3;
+  const gapWord = dot * 7;
 
   const code = morseEl.value.trim();
   if (!code) return;
 
+  const btn = document.getElementById('playBtn');
+  const span = btn.querySelector('span');
+  span.textContent = 'Играет...';
+
   let t = ctx.currentTime + 0.1;
-  let prevWasSpace = false;
 
   for (let i = 0; i < code.length; i++) {
     const ch = code[i];
-
     if (ch === ' ' || ch === '\n') {
-      // смотрим на следующий не-пробел, чтобы понять — / это слово или разделитель
+      // посмотрим — есть ли дальше "/" (словораздел)
       let j = i;
       while (j < code.length && /\s/.test(code[j])) j++;
-      const next = code[j];
-      // проверяем — не является ли следующий токен "/" (словораздел)
-      const rest = code.slice(j).trimStart();
-      if (rest.startsWith('/')) {
+      if (code[j] === '/') {
         t += gapWord;
-        // пропустим пробелы, '/' обработается сам
       } else {
         t += gapChar;
       }
       continue;
     }
-
-    if (ch === '/') {
-      // уже учли выше
-      continue;
-    }
-
-    if (ch === '.') {
-      beep(ctx, t, dot);
-      t += dot + gapSym;
-    } else if (ch === '-') {
-      beep(ctx, t, dash);
-      t += dash + gapSym;
-    }
+    if (ch === '/') continue;
+    if (ch === '.') { beep(ctx, t, dot); t += dot + gapSym; }
+    else if (ch === '-') { beep(ctx, t, dash); t += dash + gapSym; }
   }
+
+  const totalMs = (t - ctx.currentTime) * 1000;
+  setTimeout(() => { span.textContent = 'Воспроизвести'; }, totalMs);
 }
 
-// ============ Слайдер скорости ============
+// ============ Слайдер ============
 const wpmEl = document.getElementById('wpm');
 const wpmVal = document.getElementById('wpmVal');
 wpmEl.addEventListener('input', () => {
   wpmVal.textContent = wpmEl.value + ' WPM';
 });
 
-// ============ Инициализация ============
+// ============ Старт ============
 morseEl.value = textToMorse(textEl.value);
 </script>
 </body>
-</html>
+ </html>
