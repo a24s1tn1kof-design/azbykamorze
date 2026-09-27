@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Азбука Морзе</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, system-ui, sans-serif;
+    background: #0f172a; color: #e2e8f0;
+    max-width: 760px; margin: 0 auto; padding: 24px;
+  }
+  h1 { text-align: center; font-size: 24px; margin-bottom: 4px; }
+  .sub { text-align: center; color: #64748b; font-size: 13px; margin-bottom: 24px; }
+  .card {
+    background: #1e293b; border-radius: 12px; padding: 16px;
+    margin-bottom: 16px; border: 1px solid #334155;
+  }
+  label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: 0.5px; }
+  textarea {
+    width: 100%; min-height: 90px; resize: vertical;
+    background: #0f172a; color: #e2e8f0; border: 1px solid #334155;
+    border-radius: 8px; padding: 12px; font-family: ui-monospace, monospace;
+    font-size: 15px; line-height: 1.5;
+  }
+  textarea:focus { outline: none; border-color: #38bdf8; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  button {
+    background: #334155; color: #e2e8f0; border: none;
+    padding: 8px 16px; border-radius: 8px; cursor: pointer;
+    font-size: 14px; transition: background .15s;
+  }
+  button:hover { background: #475569; }
+  button.primary { background: #38bdf8; color: #0f172a; font-weight: 600; }
+  button.primary:hover { background: #7dd3fc; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  input[type=range] { width: 160px; vertical-align: middle; }
+  .speed-row { display: flex; align-items: center; gap: 12px;
+    font-size: 13px; color: #94a3b8; margin-top: 10px; }
+  .speed-val { color: #38bdf8; font-family: ui-monospace, monospace; min-width: 70px; }
+  .hint { font-size: 12px; color: #64748b; margin-top: 8px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<h1>📡 Азбука Морзе</h1>
+<p class="sub">Перевод текста ↔ код Морзе · звук · настройка скорости</p>
+
+<div class="card">
+  <label>Текст</label>
+  <textarea id="text" placeholder="Введите текст..." autofocus>Привет мир</textarea>
+</div>
+
+<div class="card">
+  <label>Код Морзе</label>
+  <textarea id="morse" placeholder=".... . .-.. .-.. ---"></textarea>
+  <div class="row">
+    <button class="primary" onclick="playMorse()">▶ Воспроизвести</button>
+    <button onclick="stopAudio()">⏹ Стоп</button>
+    <button onclick="copyMorse()">📋 Копировать</button>
+    <button onclick="swap()">🔄 Поменять</button>
+  </div>
+  <div class="speed-row">
+    <span>Скорость:</span>
+    <input type="range" id="wpm" min="5" max="30" value="15">
+    <span class="speed-val" id="wpmVal">15 WPM</span>
+  </div>
+</div>
+
+<div class="card">
+  <p class="hint">
+    <b>Формат ввода:</b> буквы разделяются пробелом, слова — «/».<br>
+    Пример: <code>.... . .-.. .-.. --- / .-- --- .-. .-.. -..</code> → «hello world»<br>
+    <b>Поддержка:</b> латиница, кириллица, цифры, знаки <code>. , ? ! / ( ) & : ; = + - _ " $ @</code>
+  </p>
+</div>
+
+<script>
+// ============ Таблица Морзе ============
+const MORSE = {
+  'A':'.-','B':'-...','C':'-.-.','D':'-..','E':'.','F':'..-.','G':'--.','H':'....',
+  'I':'..','J':'.---','K':'-.-','L':'.-..','M':'--','N':'-.','O':'---','P':'.--.',
+  'Q':'--.-','R':'.-.','S':'...','T':'-','U':'..-','V':'...-','W':'.--','X':'-..-',
+  'Y':'-.--','Z':'--..',
+  'А':'.-','Б':'-...','В':'.--','Г':'--.','Д':'-..','Е':'.','Ж':'...-','З':'--..',
+  'И':'..','Й':'.---','К':'-.-','Л':'.-..','М':'--','Н':'-.','О':'---','П':'.--.',
+  'Р':'.-.','С':'...','Т':'-','У':'..-','Ф':'..-.','Х':'....','Ц':'-.-.','Ч':'---.',
+  'Ш':'----','Щ':'--.-','Ъ':'--.--','Ы':'-.--','Ь':'-..-','Э':'..-..','Ю':'..--',
+  'Я':'.-.-',
+  '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....',
+  '6':'-....','7':'--...','8':'---..','9':'----.',
+  '.':'.-.-.-',',':'--..--','?':'..--..','!':'-.-.--','/':'-..-.','(':'-.--.',
+  ')':'-.--.-','&':'.-...',':':'---...',';':'-.-.-.','=':'-...-','+':'.-.-.',
+  '-':'-....-','_':'..--.-','"':'.-..-.','$':'...-..-','@':'.--.-.'
+};
+// обратный словарь
+const REV = {};
+for (const k in MORSE) REV[MORSE[k]] = k;
+
+// ============ Перевод ============
+function textToMorse(txt) {
+  return txt.toUpperCase().split('').map(ch => {
+    if (ch === ' ') return '/';
+    if (ch === '\n') return '/';
+    return MORSE[ch] || '';
+  }).filter(x => x !== '').join(' ');
+}
+
+function morseToText(m) {
+  return m.trim().split(/\s+/).map(code => {
+    if (code === '/') return ' ';
+    return REV[code] || '?';
+  }).join('');
+}
+
+// ============ Связка полей ============
+const textEl = document.getElementById('text');
+const morseEl = document.getElementById('morse');
+let editing = null; // какое поле сейчас правит пользователь
+
+textEl.addEventListener('input', () => {
+  if (editing === 'morse') return;
+  editing = 'text';
+  morseEl.value = textToMorse(textEl.value);
+  editing = null;
+});
+morseEl.addEventListener('input', () => {
+  if (editing === 'text') return;
+  editing = 'morse';
+  textEl.value = morseToText(morseEl.value);
+  editing = null;
+});
+
+function swap() {
+  const t = textEl.value;
+  textEl.value = morseEl.value;
+  morseEl.value = t;
+  // пересчитать
+  morseEl.value = textToMorse(textEl.value);
+}
+
+function copyMorse() {
+  navigator.clipboard.writeText(morseEl.value).then(() => {
+    const btn = event.target;
+    const old = btn.textContent;
+    btn.textContent = '✓ Скопировано';
+    setTimeout(() => btn.textContent = old, 1200);
+  });
+}
+
+// ============ Аудио (Web Audio API) ============
+let audioCtx = null;
+let stopFlag = false;
+
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function stopAudio() {
+  stopFlag = true;
+  if (audioCtx) audioCtx.close();
+  audioCtx = null;
+}
+
+// длительность точки в секундах из WPM (формула PARIS)
+function dotTime(wpm) { return 1.2 / wpm; }
+
+function beep(ctx, startTime, duration, freq = 700) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  gain.gain.setValueAtTime(0, startTime);
+  gain.gain.linearRampToValueAtTime(0.25, startTime + 0.005);
+  gain.gain.setValueAtTime(0.25, startTime + duration - 0.005);
+  gain.gain.linearRampToValueAtTime(0, startTime + duration);
+  osc.start(startTime);
+  osc.stop(startTime + duration);
+}
+
+async function playMorse() {
+  stopAudio();
+  await new Promise(r => setTimeout(r, 30)); // дать контексту закрыться
+  const ctx = getCtx();
+  const wpm = +document.getElementById('wpm').value;
+  const dot = dotTime(wpm);
+  const dash = dot * 3;
+  const gapSym = dot;        // между точками/тире внутри символа
+  const gapChar = dot * 3;   // между символами
+  const gapWord = dot * 7;   // между словами
+
+  const code = morseEl.value.trim();
+  if (!code) return;
+
+  let t = ctx.currentTime + 0.1;
+  let prevWasSpace = false;
+
+  for (let i = 0; i < code.length; i++) {
+    const ch = code[i];
+
+    if (ch === ' ' || ch === '\n') {
+      // смотрим на следующий не-пробел, чтобы понять — / это слово или разделитель
+      let j = i;
+      while (j < code.length && /\s/.test(code[j])) j++;
+      const next = code[j];
+      // проверяем — не является ли следующий токен "/" (словораздел)
+      const rest = code.slice(j).trimStart();
+      if (rest.startsWith('/')) {
+        t += gapWord;
+        // пропустим пробелы, '/' обработается сам
+      } else {
+        t += gapChar;
+      }
+      continue;
+    }
+
+    if (ch === '/') {
+      // уже учли выше
+      continue;
+    }
+
+    if (ch === '.') {
+      beep(ctx, t, dot);
+      t += dot + gapSym;
+    } else if (ch === '-') {
+      beep(ctx, t, dash);
+      t += dash + gapSym;
+    }
+  }
+}
+
+// ============ Слайдер скорости ============
+const wpmEl = document.getElementById('wpm');
+const wpmVal = document.getElementById('wpmVal');
+wpmEl.addEventListener('input', () => {
+  wpmVal.textContent = wpmEl.value + ' WPM';
+});
+
+// ============ Инициализация ============
+morseEl.value = textToMorse(textEl.value);
+</script>
+</body>
+</html>
