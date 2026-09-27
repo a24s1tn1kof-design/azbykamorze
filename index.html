@@ -35,35 +35,21 @@
     align-items: center;
     -webkit-font-smoothing: antialiased;
   }
-
   .wrap { width: 100%; max-width: 720px; }
-
-  /* ===== Header ===== */
-  header {
-    display: flex; align-items: center; gap: 14px;
-    margin-bottom: 32px;
-  }
+  header { display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
   .logo {
-    width: 44px; height: 44px;
-    border-radius: 12px;
+    width: 44px; height: 44px; border-radius: 12px;
     background: linear-gradient(135deg, #0ea5e9, #0369a1);
-    display: grid; place-items: center;
-    flex-shrink: 0;
+    display: grid; place-items: center; flex-shrink: 0;
     box-shadow: 0 4px 20px rgba(56,189,248,0.25);
   }
   .logo svg { width: 24px; height: 24px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; }
   h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
   .subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
-
-  /* ===== Lang switch ===== */
   .lang {
-    margin-left: auto;
-    display: flex;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 3px;
-    gap: 2px;
+    margin-left: auto; display: flex;
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 3px; gap: 2px;
   }
   .lang button {
     background: transparent; border: none; color: var(--muted);
@@ -73,61 +59,79 @@
   }
   .lang button.active { background: var(--accent); color: #0a0e17; }
   .lang button:not(.active):hover { color: var(--text); }
-
-  /* ===== Card ===== */
   .card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 16px;
     transition: border-color .2s;
   }
   .card:focus-within { border-color: var(--border-hi); }
-
   .card-label {
     display: flex; align-items: center; gap: 8px;
     font-size: 11px; font-weight: 600; letter-spacing: 1px;
-    text-transform: uppercase; color: var(--muted);
-    margin-bottom: 12px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
   }
   .card-label svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-
   textarea {
-    width: 100%;
-    min-height: 96px;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    padding: 14px;
+    width: 100%; min-height: 96px;
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text); padding: 14px;
     font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
-    font-size: 14px;
-    line-height: 1.7;
-    letter-spacing: 0.3px;
-    resize: vertical;
-    transition: border-color .15s, box-shadow .15s;
+    font-size: 14px; line-height: 1.7; letter-spacing: 0.3px;
+    resize: vertical; transition: border-color .15s, box-shadow .15s;
   }
   textarea:focus {
-    outline: none;
-    border-color: var(--accent);
+    outline: none; border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-dim);
   }
   textarea::placeholder { color: #4b5563; }
 
-  /* ===== Buttons ===== */
-  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  /* ===== Визуализация проигрывания ===== */
+  .morse-view {
+    display: none;
+    background: var(--panel-2);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 20px;
+    line-height: 2;
+    letter-spacing: 2px;
+    min-height: 96px;
+    word-break: break-word;
+    box-shadow: 0 0 0 3px var(--accent-dim);
+    transition: box-shadow .3s;
+  }
+  .morse-view.active { display: block; }
+  .morse-view .sym {
+    display: inline-block;
+    padding: 2px 6px;
+    margin: 0 1px;
+    border-radius: 5px;
+    transition: all .08s ease-out;
+    color: #475569;
+    transform: scale(1);
+  }
+  .morse-view .sym.on {
+    color: #0a0e17;
+    background: var(--accent);
+    box-shadow: 0 0 14px var(--accent), 0 0 28px rgba(56,189,248,0.7);
+    transform: scale(1.35);
+    font-weight: 700;
+  }
+  .morse-view .word-sep {
+    color: var(--accent);
+    opacity: 0.5;
+    margin: 0 10px;
+    font-weight: 700;
+  }
 
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
   button.btn {
     display: inline-flex; align-items: center; gap: 8px;
-    background: var(--panel-2);
-    color: var(--text);
-    border: 1px solid var(--border);
-    padding: 9px 16px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 13px; font-weight: 500;
-    font-family: inherit;
+    background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--border); padding: 9px 16px;
+    border-radius: 10px; cursor: pointer;
+    font-size: 13px; font-weight: 500; font-family: inherit;
     transition: all .15s;
   }
   button.btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -135,16 +139,12 @@
   button.btn:active { transform: translateY(1px); }
   button.btn.primary {
     background: linear-gradient(135deg, #0ea5e9, #0284c7);
-    border-color: transparent;
-    color: #fff;
-    font-weight: 600;
+    border-color: transparent; color: #fff; font-weight: 600;
     box-shadow: 0 4px 14px rgba(14,165,233,0.3);
   }
   button.btn.primary:hover { background: linear-gradient(135deg, #38bdf8, #0ea5e9); }
   button.btn.danger:hover { border-color: var(--danger); color: var(--danger); }
   button.btn.copied { border-color: #10b981; color: #10b981; }
-
-  /* ===== Speed slider ===== */
   .speed {
     display: flex; align-items: center; gap: 14px;
     margin-top: 16px; padding-top: 16px;
@@ -156,14 +156,12 @@
   input[type=range] {
     -webkit-appearance: none; appearance: none;
     flex: 1; height: 4px; border-radius: 2px;
-    background: var(--border);
-    outline: none;
+    background: var(--border); outline: none;
   }
   input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
     width: 16px; height: 16px; border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
+    background: var(--accent); cursor: pointer;
     box-shadow: 0 0 0 3px rgba(56,189,248,0.2);
     transition: transform .15s;
   }
@@ -177,40 +175,23 @@
     color: var(--accent); font-weight: 600;
     min-width: 62px; text-align: right;
   }
-
-  /* ===== Hint ===== */
   .hint {
     font-size: 12px; color: var(--muted);
     line-height: 1.8; padding: 16px 20px;
   }
   .hint code {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
+    background: var(--panel-2); border: 1px solid var(--border);
     padding: 2px 6px; border-radius: 5px;
     color: var(--accent-hi); font-size: 11px;
   }
   .hint b { color: var(--text); font-weight: 600; }
-
-  /* ===== Footer ===== */
   footer {
     margin-top: 24px; text-align: center;
     font-size: 12px; color: #374151;
   }
   footer a { color: var(--muted); text-decoration: none; }
   footer a:hover { color: var(--accent); }
-
-  /* ===== Playing indicator ===== */
-  .playing-dot {
-    display: inline-block; width: 8px; height: 8px;
-    background: var(--accent); border-radius: 50%;
-    margin-right: 6px;
-    animation: pulse 1s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.7); }
-  }
 </style>
 </head>
 <body>
@@ -218,7 +199,6 @@
 
   <header>
     <div class="logo">
-      <!-- Радио-волны -->
       <svg viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="2" fill="#fff" stroke="none"/>
         <path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7"/>
@@ -235,22 +215,21 @@
     </div>
   </header>
 
-  <!-- Text input -->
   <div class="card">
     <div class="card-label">
       <svg viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
-      <span id="labelText">Текст</span>
+      <span>Текст</span>
     </div>
     <textarea id="text" placeholder="Введите текст..." autofocus>Привет мир</textarea>
   </div>
 
-  <!-- Morse output -->
   <div class="card">
     <div class="card-label">
       <svg viewBox="0 0 24 24"><path d="M4 12h2M4 8h6M4 16h4M14 12h6M14 8h6M14 16h6"/></svg>
       <span>Код Морзе</span>
     </div>
     <textarea id="morse" placeholder=".... . .-.. .-.. ---"></textarea>
+    <div id="morseView" class="morse-view"></div>
     <div class="row">
       <button class="btn primary" id="playBtn" onclick="playMorse()">
         <svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8V4z" fill="currentColor" stroke="none"/></svg>
@@ -260,7 +239,7 @@
         <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1" fill="currentColor" stroke="none"/></svg>
         <span>Стоп</span>
       </button>
-      <button class="btn" id="copyBtn" onclick="copyMorse(event)">
+      <button class="btn" id="copyBtn" onclick="copyMorse()">
         <svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
         <span>Копировать</span>
       </button>
@@ -280,11 +259,10 @@
     </div>
   </div>
 
-  <!-- Hint -->
   <div class="card hint">
     <b>Формат:</b> буквы — через пробел, слова — через <code>/</code><br>
     <b>Пример:</b> <code>.... . .-.. .-.. --- / .-- --- .-. .-.. -..</code> → «hello world»<br>
-    <b>Поддержка:</b> кириллица, латиница, цифры, <code>. , ? ! / ( ) & : ; = + - _ " $ @</code>
+    <b>Поддержка:</b> латиница + кириллица + цифры + <code>. , ? ! / ( ) & : ; = + - _ " $ @</code>
   </div>
 
   <footer>
@@ -306,7 +284,6 @@ const MORSE_LAT = {
   ')':'-.--.-','&':'.-...',':':'---...',';':'-.-.-.','=':'-...-','+':'.-.-.',
   '-':'-....-','_':'..--.-','"':'.-..-.','$':'...-..-','@':'.--.-.'
 };
-
 const MORSE_CYR = {
   'А':'.-','Б':'-...','В':'.--','Г':'--.','Д':'-..','Е':'.','Ж':'...-','З':'--..',
   'И':'..','Й':'.---','К':'-.-','Л':'.-..','М':'--','Н':'-.','О':'---','П':'.--.',
@@ -315,15 +292,12 @@ const MORSE_CYR = {
   'Я':'.-.-'
 };
 
-let currentLang = 'ru';
-let MORSE = {}, REV = {};
+const MORSE = Object.assign({}, MORSE_LAT, MORSE_CYR);
+const REV_CYR = {}, REV_LAT = {};
+for (const k in MORSE_CYR) REV_CYR[MORSE_CYR[k]] = k;
+for (const k in MORSE_LAT) REV_LAT[MORSE_LAT[k]] = k;
 
-function rebuildTables() {
-  MORSE = Object.assign({}, MORSE_LAT, currentLang === 'ru' ? MORSE_CYR : {});
-  REV = {};
-  for (const k in MORSE) REV[MORSE[k]] = k;
-}
-rebuildTables();
+let currentLang = 'ru';
 
 // ============ Перевод ============
 function textToMorse(txt) {
@@ -332,41 +306,33 @@ function textToMorse(txt) {
     return MORSE[ch] || '';
   }).filter(x => x !== '').join(' ');
 }
-
 function morseToText(m) {
+  const rev = currentLang === 'ru' ? REV_CYR : REV_LAT;
   return m.trim().split(/\s+/).map(code => {
     if (code === '/') return ' ';
-    return REV[code] || '?';
+    return rev[code] || '?';
   }).join('');
 }
 
 // ============ Поля ============
 const textEl = document.getElementById('text');
 const morseEl = document.getElementById('morse');
-let editing = null;
 
 textEl.addEventListener('input', () => {
-  if (editing === 'morse') return;
-  editing = 'text';
   morseEl.value = textToMorse(textEl.value);
-  editing = null;
 });
 morseEl.addEventListener('input', () => {
-  if (editing === 'text') return;
-  editing = 'morse';
   textEl.value = morseToText(morseEl.value);
-  editing = null;
 });
 
 function swap() {
+  stopAudio();
   const t = textEl.value;
   textEl.value = morseEl.value;
-  morseEl.value = t;
-  // пересчёт под текущий язык
   morseEl.value = textToMorse(textEl.value);
 }
 
-function copyMorse(e) {
+function copyMorse() {
   navigator.clipboard.writeText(morseEl.value).then(() => {
     const btn = document.getElementById('copyBtn');
     const span = btn.querySelector('span');
@@ -377,18 +343,18 @@ function copyMorse(e) {
   });
 }
 
-// ============ Смена языка ============
 function setLang(lang) {
   currentLang = lang;
   document.getElementById('langRU').classList.toggle('active', lang === 'ru');
   document.getElementById('langEN').classList.toggle('active', lang === 'en');
-  rebuildTables();
-  // пересчитать морзе из текста
-  morseEl.value = textToMorse(textEl.value);
+  if (morseEl.value.trim()) {
+    textEl.value = morseToText(morseEl.value);
+  }
 }
 
-// ============ Аудио ============
+// ============ Аудио + визуализация ============
 let audioCtx = null;
+let playTimers = [];
 
 function getCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -397,7 +363,13 @@ function getCtx() {
 
 function stopAudio() {
   if (audioCtx) { audioCtx.close(); audioCtx = null; }
-  document.getElementById('playBtn').querySelector('span').textContent = 'Воспроизвести';
+  playTimers.forEach(clearTimeout);
+  playTimers = [];
+  const view = document.getElementById('morseView');
+  if (view) view.classList.remove('active');
+  morseEl.style.display = '';
+  const span = document.getElementById('playBtn').querySelector('span');
+  span.textContent = 'Воспроизвести';
 }
 
 function dotTime(wpm) { return 1.2 / wpm; }
@@ -415,6 +387,32 @@ function beep(ctx, startTime, duration, freq = 700) {
   gain.gain.linearRampToValueAtTime(0, startTime + duration);
   osc.start(startTime);
   osc.stop(startTime + duration);
+}
+
+// Строим визуальную полосу из символов
+function buildMorseView(code) {
+  const view = document.getElementById('morseView');
+  view.innerHTML = '';
+  const syms = [];
+  for (const ch of code) {
+    if (ch === '.' || ch === '-') {
+      const s = document.createElement('span');
+      s.className = 'sym';
+      s.textContent = ch === '.' ? '•' : '—';
+      view.appendChild(s);
+      syms.push(s);
+    } else if (ch === '/') {
+      const s = document.createElement('span');
+      s.className = 'word-sep';
+      s.textContent = '/';
+      view.appendChild(s);
+    } else {
+      const s = document.createElement('span');
+      s.textContent = ' ';
+      view.appendChild(s);
+    }
+  }
+  return syms;
 }
 
 async function playMorse() {
@@ -435,28 +433,55 @@ async function playMorse() {
   const span = btn.querySelector('span');
   span.textContent = 'Играет...';
 
-  let t = ctx.currentTime + 0.1;
+  // Показываем визуализацию вместо textarea
+  const view = document.getElementById('morseView');
+  const symEls = buildMorseView(code);
+  view.classList.add('active');
+  morseEl.style.display = 'none';
+
+  const startTime = ctx.currentTime + 0.15;
+  let t = startTime;
+  let symIdx = 0;
+  const highlights = [];
 
   for (let i = 0; i < code.length; i++) {
     const ch = code[i];
     if (ch === ' ' || ch === '\n') {
-      // посмотрим — есть ли дальше "/" (словораздел)
       let j = i;
       while (j < code.length && /\s/.test(code[j])) j++;
-      if (code[j] === '/') {
-        t += gapWord;
-      } else {
-        t += gapChar;
-      }
+      if (code[j] === '/') t += gapWord;
+      else t += gapChar;
       continue;
     }
     if (ch === '/') continue;
-    if (ch === '.') { beep(ctx, t, dot); t += dot + gapSym; }
-    else if (ch === '-') { beep(ctx, t, dash); t += dash + gapSym; }
+    if (ch === '.' || ch === '-') {
+      const dur = ch === '.' ? dot : dash;
+      beep(ctx, t, dur);
+      const el = symEls[symIdx++];
+      if (el) {
+        highlights.push({
+          el,
+          startMs: (t - startTime) * 1000,
+          durMs: dur * 1000 + 60
+        });
+      }
+      t += dur + gapSym;
+    }
   }
 
-  const totalMs = (t - ctx.currentTime) * 1000;
-  setTimeout(() => { span.textContent = 'Воспроизвести'; }, totalMs);
+  // Планируем подсветку
+  playTimers = [];
+  highlights.forEach(h => {
+    playTimers.push(setTimeout(() => h.el.classList.add('on'), h.startMs));
+    playTimers.push(setTimeout(() => h.el.classList.remove('on'), h.startMs + h.durMs));
+  });
+
+  const totalMs = (t - startTime) * 1000 + 150;
+  playTimers.push(setTimeout(() => {
+    span.textContent = 'Воспроизвести';
+    view.classList.remove('active');
+    morseEl.style.display = '';
+  }, totalMs));
 }
 
 // ============ Слайдер ============
@@ -470,4 +495,4 @@ wpmEl.addEventListener('input', () => {
 morseEl.value = textToMorse(textEl.value);
 </script>
 </body>
- </html>
+    </html>
